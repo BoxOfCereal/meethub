@@ -4,7 +4,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib.auth.models import User
 from django.views import View
 from django.contrib.auth.decorators import login_required
 
@@ -110,9 +109,8 @@ class EventDelete(LoginRequiredMixin, SuccessMessageMixin, generic.DeleteView):
 @login_required()
 def attend_event(request, event_id):
     event = get_object_or_404(Event, pk=event_id)
-    attendee = User.objects.get(username=request.user)
-    event.attendees.add(attendee)
-    create_action(attendee, 'is attending', event)
+    event.attendees.add(request.user)
+    create_action(request.user, 'is attending', event)
     messages.success(request, 'You are now attending {0}'.format(event.name))
     return redirect('events:event-detail', pk=event.pk)
 
@@ -120,9 +118,8 @@ def attend_event(request, event_id):
 @login_required()
 def not_attend_event(request, event_id):
     event = get_object_or_404(Event, pk=event_id)
-    attendee = User.objects.get(username=request.user)
-    event.attendees.remove(attendee)
-    create_action(attendee, 'no longer attending', event)
+    event.attendees.remove(request.user)
+    create_action(request.user, 'no longer attending', event)
     messages.success(request, 'You are no longer attending {0}'.format(event.name))
     return redirect('events:event-detail', pk=event.pk)
 
