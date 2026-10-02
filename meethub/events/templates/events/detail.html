@@ -2,7 +2,6 @@
 {% load events_tags %}
 {% load events_filters %}
 {% load crispy_forms_filters %}
-{% load cloudinary %}
 
 {% block title %}{{ event.name }} - MeetHub{% endblock %}
 
@@ -117,7 +116,13 @@
                             <div class="col-md-4 col-sm-6 mb-3">
                                 <div class="d-flex align-items-center p-3 border rounded">
                                     <div class="mr-3">
-                                        <i class="fas fa-user-circle text-primary" style="font-size: 2rem;"></i>
+                                        {% if attendee.profile.photo %}
+                                            <img src="{{ attendee.profile.photo.url }}" width="50" height="50" style="object-fit: cover; border-radius: 50%;">
+                                        {% else %}
+                                            <div style="width: 50px; height: 50px; border-radius: 50%; background: #e0e0e0; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-user text-muted"></i>
+                                            </div>
+                                        {% endif %}
                                     </div>
                                     <div>
                                         <h6 class="mb-0 font-weight-bold">{{ attendee.username|capfirst }}</h6>
@@ -153,7 +158,13 @@
                         {% if not comment.get_parents %}
                             <div class="media mb-4 p-3 border rounded">
                                 <div class="media-object mr-3">
-                                    {% cloudinary comment.get_comment_creator_photo width=50 height=50 radius='max' crop='fill' %}
+                                    {% if comment.get_comment_creator_photo %}
+                                        <img src="{{ comment.get_comment_creator_photo.url }}" width="50" height="50" style="object-fit: cover; border-radius: 50%;">
+                                    {% else %}
+                                        <div style="width: 50px; height: 50px; border-radius: 50%; background: #e0e0e0; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-user text-muted"></i>
+                                        </div>
+                                    {% endif %}
                                 </div>
                                 <div class="media-body">
                                     <h5 class="mt-0 mb-2 text-primary font-weight-bold">{{ comment.created_by|capfirst }}</h5>
@@ -167,7 +178,13 @@
                                             {% for child in comment.get_children %}
                                                 <div class="media mt-3 ml-4 p-3 bg-light rounded">
                                                     <div class="media-object mr-3">
-                                                        {% cloudinary child.get_comment_creator_photo width=40 height=40 radius='max' crop='fill' %}
+                                                        {% if child.get_comment_creator_photo %}
+                                                            <img src="{{ child.get_comment_creator_photo.url }}" width="40" height="40" style="object-fit: cover; border-radius: 50%;">
+                                                        {% else %}
+                                                            <div style="width: 40px; height: 40px; border-radius: 50%; background: #e0e0e0; display: flex; align-items: center; justify-content: center;">
+                                                                <i class="fas fa-user text-muted"></i>
+                                                            </div>
+                                                        {% endif %}
                                                     </div>
                                                     <div class="media-body">
                                                         <h6 class="mt-0 mb-2 text-primary font-weight-bold">{{ child.created_by|capfirst }}</h6>
@@ -181,7 +198,13 @@
                                                                 {% for grandchild in child.get_children %}
                                                                     <div class="media mt-2 ml-4 p-2 bg-white rounded border">
                                                                         <div class="media-object mr-2">
-                                                                            {% cloudinary grandchild.get_comment_creator_photo width=30 height=30 radius='max' crop='fill' %}
+                                                                            {% if grandchild.get_comment_creator_photo %}
+                                                                                <img src="{{ grandchild.get_comment_creator_photo.url }}" width="30" height="30" style="object-fit: cover; border-radius: 50%;">
+                                                                            {% else %}
+                                                                                <div style="width: 30px; height: 30px; border-radius: 50%; background: #e0e0e0; display: flex; align-items: center; justify-content: center;">
+                                                                                    <i class="fas fa-user text-muted" style="font-size: 0.8rem;"></i>
+                                                                                </div>
+                                                                            {% endif %}
                                                                         </div>
                                                                         <div class="media-body">
                                                                             <h6 class="mt-0 mb-1 text-primary font-weight-bold">{{ grandchild.created_by|capfirst }}</h6>

@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 from pathlib import Path
-import cloudinary
 from decouple import config
 
 
@@ -40,7 +39,6 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
     'tinymce',
 
-    'cloudinary',
     'rest_framework',
     'factory',
 
@@ -146,7 +144,9 @@ USE_TZ = True
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 STORAGES = {
-    # ...
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
@@ -205,13 +205,6 @@ TINYMCE_DEFAULT_CONFIG = {
 
 
 
-
-cloudinary.config(
-    cloud_name = config('CLOUDINARY_NAME'),
-    api_key = config('CLOUDINARY_API_KEY'),
-    api_secret = config('CLOUDINARY_API_SECRET')
-
-)
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 

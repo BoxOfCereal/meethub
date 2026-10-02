@@ -2,8 +2,6 @@ from django.db import models
 from django.conf import settings
 from django.shortcuts import reverse
 
-from cloudinary.models import CloudinaryField
-
 from meethub.events.models import Event
 from meethub.accounts.models import Account
 # Create your models here.
@@ -12,7 +10,7 @@ from meethub.accounts.models import Account
 class Profile(models.Model):
     user = models.OneToOneField(Account, on_delete=models.CASCADE)
     date_of_birth = models.DateField(blank=True, null=True)
-    photo = CloudinaryField('image', blank=True, null=True)
+    photo = models.ImageField(upload_to='profile_photos/', blank=True, null=True)
 
     class Meta:
         verbose_name_plural = 'profiles'

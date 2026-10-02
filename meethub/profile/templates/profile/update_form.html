@@ -1,7 +1,6 @@
 {% extends 'events/base.html' %}
 {% load static %}
 {% load crispy_forms_filters %}
-{% load cloudinary %}
 
 {% block content %}
 <div class="container">
@@ -25,7 +24,7 @@
                         <div class="profile-preview-section text-center mb-5">
                             <div class="current-profile-image mb-3">
                                 {% if user.profile.photo %}
-                                    {% cloudinary user.profile.photo width=120 height=120 crop="fill" gravity='face' radius='max' class="profile-preview-img" %}
+                                    <img src="{{ user.profile.photo.url }}" width="120" height="120" class="profile-preview-img" style="object-fit: cover; border-radius: 50%;">
                                 {% else %}
                                     <div class="profile-placeholder">
                                         <i class="fas fa-user-circle text-muted"></i>

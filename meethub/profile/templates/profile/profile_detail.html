@@ -1,6 +1,5 @@
 {% extends 'events/base.html' %}
 {% load static %}
-{% load cloudinary %}
 
 {% block content %}
 <div class="container">
@@ -12,7 +11,13 @@
                     <div class="row align-items-center">
                         <div class="col-md-4 text-center mb-4 mb-md-0">
                             <div class="profile-image-container position-relative d-inline-block">
-                                {% cloudinary account.profile.photo width=180 height=180 crop="fill" gravity='face' radius='max' class="profile-image" %}
+                                {% if account.profile.photo %}
+                                    <img src="{{ account.profile.photo.url }}" width="180" height="180" class="profile-image" style="object-fit: cover; border-radius: 50%;">
+                                {% else %}
+                                    <div class="profile-placeholder" style="width: 180px; height: 180px; border-radius: 50%; background: #e0e0e0; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-user text-muted" style="font-size: 4rem;"></i>
+                                    </div>
+                                {% endif %}
                                 <div class="profile-image-overlay">
                                     <i class="fas fa-camera text-white"></i>
                                 </div>

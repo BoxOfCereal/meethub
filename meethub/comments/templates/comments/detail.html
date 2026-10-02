@@ -1,5 +1,4 @@
 {% extends 'events/base.html' %}
-{% load cloudinary %}
 {% load crispy_forms_filters %}
 
 {% block content %}
@@ -11,7 +10,13 @@
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center mb-3">
                         <div class="mr-3">
-                            {% cloudinary comment.get_comment_creator_photo width=50 height=50 radius='max' crop='fill' class='rounded-circle border border-light' %}
+                            {% if comment.get_comment_creator_photo %}
+                                <img src="{{ comment.get_comment_creator_photo.url }}" width="50" height="50" class="rounded-circle border border-light" style="object-fit: cover; border-radius: 50%;">
+                            {% else %}
+                                <div style="width: 50px; height: 50px; border-radius: 50%; background: #e0e0e0; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-user text-muted"></i>
+                                </div>
+                            {% endif %}
                         </div>
                         <div class="flex-grow-1">
                             <h5 class="mb-1 text-dark">{{ comment.created_by|capfirst }}</h5>
