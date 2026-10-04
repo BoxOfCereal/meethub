@@ -31,6 +31,18 @@ class EventList(LoginRequiredMixin, generic.ListView):
             return Event.objects.all()
 
 
+class MapEventList(LoginRequiredMixin, generic.ListView):
+    model = Event
+    template_name = 'events/map_events.html'
+    context_object_name = 'events'
+    paginate_by = 20
+
+    def get_queryset(self):
+        # Return all events, including those without coordinates
+        # Events without coordinates will only show in the list, not on the map
+        return Event.objects.all()
+
+
 class EventDisplay(generic.DetailView):
     model = Event
     template_name = 'events/detail.html'
@@ -94,7 +106,7 @@ class EventUpdate(LoginRequiredMixin, SuccessMessageMixin, EventFormMixin, gener
     model = Event
     template_name = 'events/update_form.html'
     template_name_suffix = '_update_form'
-    fields = ('category', 'name', 'details', 'venue', 'time', 'date',)
+    fields = ('category', 'name', 'details', 'venue', 'time', 'date', 'latitude', 'longitude',)
     success_message = "%(name)s was updated successfully"
 
 

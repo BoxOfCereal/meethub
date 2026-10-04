@@ -39,12 +39,12 @@
                     <i class="fas fa-fire mr-2"></i>Trending Events
                 </h2>
                 <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-outline-primary active">
+                    <a href="{% url 'events:event-list' %}" class="btn btn-outline-primary active">
                         <i class="fas fa-th-large mr-1"></i>Grid
-                    </button>
-                    <button type="button" class="btn btn-outline-primary">
-                        <i class="fas fa-list mr-1"></i>List
-                    </button>
+                    </a>
+                    <a href="{% url 'events:event-map' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-map-marked-alt mr-1"></i>Map
+                    </a>
                 </div>
             </div>
         </div>

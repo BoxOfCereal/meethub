@@ -32,6 +32,8 @@ class Event(models.Model):
     creator = models.ForeignKey(Account, on_delete=models.CASCADE)
     attendees = models.ManyToManyField(Account, related_name='attending', blank=True)
     num_of_attendees = models.PositiveIntegerField(default=0, blank=True)
+    latitude = models.FloatField(null=True, blank=True, help_text='Latitude coordinate for the event location')
+    longitude = models.FloatField(null=True, blank=True, help_text='Longitude coordinate for the event location')
 
     class Meta:
         verbose_name = 'event'

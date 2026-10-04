@@ -28,9 +28,29 @@ class EventForm(forms.ModelForm):
         })
     )
 
+    latitude = forms.FloatField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Latitude (e.g., 40.7128)',
+            'id': 'latitude-field',
+            'step': 'any'
+        })
+    )
+
+    longitude = forms.FloatField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Longitude (e.g., -74.0060)',
+            'id': 'longitude-field',
+            'step': 'any'
+        })
+    )
+
     class Meta:
         model = Event
-        fields = ('category', 'name', 'details', 'venue', 'time', 'date',)
+        fields = ('category', 'name', 'details', 'venue', 'time', 'date', 'latitude', 'longitude',)
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'venue': forms.TextInput(attrs={'class': 'form-control'}),
