@@ -104,6 +104,47 @@ class Category(models.Model):
         return self.name
 ```
 
+## Seeding Events
+
+A separate management command is available to seed the database with sample events around coordinates 44.000000, -71.500000 (New Hampshire/Vermont area).
+
+### Usage
+
+To seed events, run:
+
+```bash
+uv run python manage.py seed_events
+```
+
+Or if using a virtual environment:
+
+```bash
+python manage.py seed_events
+```
+
+### Command Behavior
+
+The command will:
+- Create a test user (test@example.com) if it doesn't exist
+- Generate 12 sample events with coordinates within ~0.1 degrees of the center point
+- Distribute events across available categories
+- Set realistic dates, times, venues, and descriptions
+- Use `get_or_create()` to avoid duplicates
+
+### Requirements
+
+The `seed_events` command requires categories to exist first. Run `seed_categories` before running `seed_events`.
+
+### Example Output
+
+```
+Test user already exists: test@example.com
+Created event: Mountain Music Festival at (44.052345, -71.487654)
+Created event: Art Gallery Opening at (43.987654, -71.523456)
+...
+Seeding complete! Created 12 new events, skipped 0 existing events.
+```
+
 ## Troubleshooting
 
 ### Command Not Found
