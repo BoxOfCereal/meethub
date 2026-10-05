@@ -101,6 +101,14 @@ class EventCreate(LoginRequiredMixin, SuccessMessageMixin, EventFormMixin, gener
     context_object_name = 'event'
     success_message = "%(name)s was created successfully"
 
+
+class EventCreateMap(LoginRequiredMixin, SuccessMessageMixin, EventFormMixin, generic.CreateView):
+    model = Event
+    template_name = 'events/create_event_map.html'
+    form_class = EventForm
+    context_object_name = 'event'
+    success_message = "%(name)s was created successfully"
+
     
 class EventUpdate(LoginRequiredMixin, SuccessMessageMixin, EventFormMixin, generic.UpdateView):
     model = Event
