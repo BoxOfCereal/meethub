@@ -1,3 +1,8 @@
 https://www.openinary.dev/
 https://docs.openinary.dev/guides/coolify-deployment
 https://leafletjs.com/examples/quick-start/
+
+
+When trying to delete event it redirects to http://127.0.0.1:8000/events/16/delete 
+
+Still not sure how I'm going to do interactivity on the page yet.

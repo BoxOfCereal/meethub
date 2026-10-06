@@ -24,7 +24,7 @@
                     <a href="{% url 'events:event-map' %}" class="btn btn-outline-primary active">
                         <i class="fas fa-map-marked-alt mr-1"></i>Map
                     </a>
-                    <a href="{% url 'events:event-create' %}" class="btn btn-primary">
+                    <a href="{% url 'events:event-create-map' %}" class="btn btn-primary">
                         <i class="fas fa-plus-circle mr-2"></i>Create Event
                     </a>
                 </div>
@@ -60,7 +60,7 @@
                         {% endif %}
                         
                         <h5 class="card-title font-weight-bold text-dark mb-2">
-                            <a href="{% url 'events:event-detail' event.id %}" class="text-decoration-none text-dark">
+                            <a href="{% url 'events:event-detail-map' event.id %}" class="text-decoration-none text-dark">
                                 {{ event.name }}
                             </a>
                         </h5>
@@ -84,7 +84,7 @@
                                 </div>
                             </div>
                             <div class="col-4 text-right">
-                                <a href="{% url 'events:event-detail' event.id %}" class="btn btn-primary btn-sm">
+                                <a href="{% url 'events:event-detail-map' event.id %}" class="btn btn-primary btn-sm">
                                     <i class="fas fa-arrow-right mr-1"></i>View
                                 </a>
                             </div>
@@ -112,7 +112,7 @@
                         <p class="text-muted mb-4">
                             Looks like there are no events scheduled right now. Why not create the first one?
                         </p>
-                        <a href="{% url 'events:event-create' %}" class="btn btn-primary btn-lg">
+                        <a href="{% url 'events:event-create-map' %}" class="btn btn-primary btn-lg">
                             <i class="fas fa-plus-circle mr-2"></i>Create Your First Event
                         </a>
                     </div>
@@ -275,6 +275,7 @@
             const eventVenue = card.querySelector('.fa-map-marker-alt')?.parentElement?.textContent || '';
             const eventDate = card.querySelector('.fa-calendar-alt')?.parentElement?.textContent || '';
             const eventUrl = card.querySelector('.card-title a').href;
+            const eventId = card.dataset.eventId;
             
             marker.bindPopup(`
                 <div style="min-width: 200px;">

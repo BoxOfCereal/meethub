@@ -6,6 +6,7 @@ urlpatterns = [
     path('events/', views.EventList.as_view(), name='event-list'),
     path('events/map/', views.MapEventList.as_view(), name='event-map'),
     path('events/<int:pk>/', views.EventDetail.as_view(), name='event-detail'),
+    path('events/map/<int:pk>/', views.EventDetailMap.as_view(), name='event-detail-map'),
     path('events/new/', views.EventCreate.as_view(), name='event-create' ),
     path('events/map/new/', views.EventCreateMap.as_view(), name='event-create-map' ),
     path('events/<int:pk>/delete', views.EventDelete.as_view(), name='event-delete'),
