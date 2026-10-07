@@ -6,3 +6,10 @@ https://leafletjs.com/examples/quick-start/
 When trying to delete event it redirects to http://127.0.0.1:8000/events/16/delete 
 
 Still not sure how I'm going to do interactivity on the page yet.
+
+Refactor everything into a base template where there's the two column the left is the map and the right side is the you know content event list create form details etc.
+
+
+It should also be responsive and on mobile the map will be on the top and the the column will be on the bottom. The map will be limited in size but the bottom content we'll be allowed to overflow and take up the rest of the screen.
+
+Add replies back

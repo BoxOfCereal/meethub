@@ -31,11 +31,11 @@ urlpatterns = [
     # path('iyanuashiri/filebrowser/', site.urls),
     path('', include('meethub.events.urls'), name='events'),
     
-    path('', include('meethub.accounts.urls')),
+    path('accounts/', include('meethub.accounts.urls')),
     # path('tinymce/', include('tinymce.urls')),
-    path('', include('meethub.profile.urls'), name='profile'),
-    path('', include('meethub.actions.urls')),
-    path('', include('meethub.comments.urls')),
+    path('profile/', include('meethub.profile.urls'), name='profile'),
+    path('actions/', include('meethub.actions.urls')),
+    path('comments/', include('meethub.comments.urls')),
 
     # path('api/v1/', include('apiv1.urls')),
 

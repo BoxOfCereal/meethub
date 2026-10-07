@@ -143,6 +143,9 @@ class EventCreate(LoginRequiredMixin, SuccessMessageMixin, EventFormMixin, gener
     context_object_name = 'event'
     success_message = "%(name)s was created successfully"
 
+    def get_success_url(self):
+        return reverse_lazy('events:event-detail', kwargs={'pk': self.object.pk})
+
 
 class EventCreateMap(LoginRequiredMixin, SuccessMessageMixin, EventFormMixin, generic.CreateView):
     model = Event
@@ -152,7 +155,7 @@ class EventCreateMap(LoginRequiredMixin, SuccessMessageMixin, EventFormMixin, ge
     success_message = "%(name)s was created successfully"
 
     def get_success_url(self):
-        return reverse_lazy('events:event-detail-map', kwargs={'pk': self.object.pk})
+        return reverse_lazy('events:event-detail', kwargs={'pk': self.object.pk})
 
     
 class EventUpdate(LoginRequiredMixin, SuccessMessageMixin, EventFormMixin, generic.UpdateView):
@@ -162,10 +165,32 @@ class EventUpdate(LoginRequiredMixin, SuccessMessageMixin, EventFormMixin, gener
     fields = ('category', 'name', 'details', 'venue', 'time', 'date', 'latitude', 'longitude',)
     success_message = "%(name)s was updated successfully"
 
+    def get_success_url(self):
+        return reverse_lazy('events:event-detail', kwargs={'pk': self.object.pk})
+
 
 class EventDelete(LoginRequiredMixin, SuccessMessageMixin, generic.DeleteView):
     model = Event
     template_name = 'events/delete.html'
+    success_url = reverse_lazy('events:event-list')
+    context_object_name = 'event'
+    success_message = "Event was deleted successfully"
+
+
+class EventUpdateMap(LoginRequiredMixin, SuccessMessageMixin, EventFormMixin, generic.UpdateView):
+    model = Event
+    template_name = 'events/update_event_map.html'
+    template_name_suffix = '_update_form'
+    fields = ('category', 'name', 'details', 'venue', 'time', 'date', 'latitude', 'longitude',)
+    success_message = "%(name)s was updated successfully"
+
+    def get_success_url(self):
+        return reverse_lazy('events:event-detail', kwargs={'pk': self.object.pk})
+
+
+class EventDeleteMap(LoginRequiredMixin, SuccessMessageMixin, generic.DeleteView):
+    model = Event
+    template_name = 'events/delete_event_map.html'
     success_url = reverse_lazy('events:event-list')
     context_object_name = 'event'
     success_message = "Event was deleted successfully"
@@ -178,10 +203,6 @@ def attend_event(request, event_id):
     create_action(request.user, 'is attending', event)
     messages.success(request, 'You are now attending {0}'.format(event.name))
     
-    # Check if request came from map detail page
-    referer = request.META.get('HTTP_REFERER', '')
-    if '/events/map/' in referer:
-        return redirect('events:event-detail-map', pk=event.pk)
     return redirect('events:event-detail', pk=event.pk)
 
 
@@ -192,9 +213,5 @@ def not_attend_event(request, event_id):
     create_action(request.user, 'no longer attending', event)
     messages.success(request, 'You are no longer attending {0}'.format(event.name))
     
-    # Check if request came from map detail page
-    referer = request.META.get('HTTP_REFERER', '')
-    if '/events/map/' in referer:
-        return redirect('events:event-detail-map', pk=event.pk)
     return redirect('events:event-detail', pk=event.pk)
 

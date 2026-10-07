@@ -1,0 +1,106 @@
+{% extends 'events/base_map.html' %}
+{% load events_tags %}
+{% load events_filters %}
+
+{% block title %}Delete Event - MeetHub{% endblock %}
+
+{% block sidebar_content %}
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-dark font-weight-bold">
+                    <i class="fas fa-map-marked-alt mr-2"></i>Delete Event
+                </h2>
+                <div class="btn-group" role="group">
+                    <a href="{% url 'events:event-detail' object.id %}" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left mr-1"></i>Back
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Delete Confirmation -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="alert alert-danger">
+                        <h4 class="alert-heading">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>Are you sure?
+                        </h4>
+                        <p class="mb-0">
+                            You are about to delete the event <strong>{{ object.name }}</strong>. This action cannot be undone.
+                        </p>
+                    </div>
+                    
+                    <div class="card mb-3">
+                        <div class="card-header bg-gradient-primary text-white border-0">
+                            <div class="row align-items-center">
+                                <div class="col-8">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-calendar-alt mr-2"></i>{{ object.date }}
+                                    </h6>
+                                </div>
+                                <div class="col-4 text-right">
+                                    <span class="badge badge-light">
+                                        <i class="fas fa-clock mr-1"></i>{{ object.time }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body">
+                            {% if object.venue %}
+                            <div class="mb-2">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-map-marker-alt text-primary mr-2"></i>
+                                    <span class="font-weight-bold text-uppercase">{{ object.venue }}</span>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <h5 class="card-title font-weight-bold text-dark mb-2">
+                                {{ object.name }}
+                            </h5>
+                            
+                            <div class="card-text text-muted mb-2">
+                                {{ object.details|safe|truncatewords_html:15 }}
+                            </div>
+                            
+                            <div class="row align-items-center">
+                                <div class="col-8">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-users text-primary mr-2"></i>
+                                        <span class="font-weight-bold text-primary">{{ object.get_number_of_attendees }}</span>
+                                        <span class="text-muted ml-1">attending</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="btn-group w-100" role="group">
+                            <a href="{% url 'events:event-detail' object.id %}" class="btn btn-secondary">
+                                <i class="fas fa-times mr-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash mr-2"></i>Delete Event
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+{% endblock %}
+
+{% block map_extra_js %}
+<script>
+    {% if object.latitude and object.longitude %}
+        // Add event marker
+        const eventLat = {{ object.latitude }};
+        const eventLon = {{ object.longitude }};
+        
+        const marker = L.marker([eventLat, eventLon]).addTo(map);
+        marker.bindPopup('<strong>{{ object.name }}</strong><br>{{ object.venue|default:"" }}').openPopup();
+        
+        // Center map on event location
+        map.setView([eventLat, eventLon], 15);
+    {% endif %}
+</script>
+{% endblock %}

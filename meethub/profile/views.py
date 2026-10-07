@@ -50,3 +50,15 @@ class UserDetail(LoginRequiredMixin, generic.DetailView):
         context['events'] = Event.objects.filter(creator=self.request.user)
         context['comments'] = Comment.objects.filter(created_by=self.request.user)
         return context
+
+
+class UserDetailMap(LoginRequiredMixin, generic.DetailView):
+    model = Account
+    template_name = 'profile/profile_map.html'
+    context_object_name = 'account'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['events'] = Event.objects.filter(creator=self.request.user)
+        context['comments'] = Comment.objects.filter(created_by=self.request.user)
+        return context

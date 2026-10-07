@@ -13,3 +13,12 @@ class NotificationList(ListView):
 
     def get_queryset(self):
         return Action.objects.exclude(user=self.request.user)
+
+
+class NotificationListMap(ListView):
+    model = Action
+    template_name = 'actions/notifications_map.html'
+    context_object_name = 'actions'
+
+    def get_queryset(self):
+        return Action.objects.exclude(user=self.request.user)
