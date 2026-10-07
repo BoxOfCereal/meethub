@@ -112,3 +112,6 @@ share/
 pyvenv.cfg
 .env
 config/.env
+
+# Media files
+media/*
