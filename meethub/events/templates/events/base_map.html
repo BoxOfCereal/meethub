@@ -44,39 +44,52 @@
 
 {% block map_init_script %}
 <script>
+    // Determine initial center coordinates
+    {% if initial_lat and initial_lon %}
+        const initialLat = {{ initial_lat }};
+        const initialLon = {{ initial_lon }};
+        const initialZoom = 15;
+    {% else %}
+        const initialLat = 40.7128;
+        const initialLon = -74.0060;
+        const initialZoom = 13;
+    {% endif %}
+
     // Initialize map
-    const map = L.map('map').setView([40.7128, -74.0060], 13); // Default to NYC
-    
+    const map = L.map('map').setView([initialLat, initialLon], initialZoom);
+
     // Add OpenStreetMap tiles (no API key required for basic usage)
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
-    
-    // Get user's location
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            function(position) {
-                const lat = position.coords.latitude;
-                const lon = position.coords.longitude;
-                map.setView([lat, lon], 13);
-                
-                // Add user location marker
-                L.circleMarker([lat, lon], {
-                    radius: 8,
-                    fillColor: '#4285F4',
-                    color: '#fff',
-                    weight: 2,
-                    opacity: 1,
-                    fillOpacity: 1
-                }).addTo(map).bindPopup('Your Location');
-            },
-            function(error) {
-                console.log('Geolocation error:', error.message);
-                // Keep default view if geolocation fails
-            }
-        );
-    }
+
+    // Get user's location (only if not already centered on specific coordinates)
+    {% if not initial_lat or not initial_lon %}
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    map.setView([lat, lon], 13);
+
+                    // Add user location marker
+                    L.circleMarker([lat, lon], {
+                        radius: 8,
+                        fillColor: '#4285F4',
+                        color: '#fff',
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 1
+                    }).addTo(map).bindPopup('Your Location');
+                },
+                function(error) {
+                    console.log('Geolocation error:', error.message);
+                    // Keep default view if geolocation fails
+                }
+            );
+        }
+    {% endif %}
 </script>
 {% endblock %}
 

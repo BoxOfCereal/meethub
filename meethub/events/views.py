@@ -42,6 +42,15 @@ class MapEventList(LoginRequiredMixin, generic.ListView):
         # Events without coordinates will only show in the list, not on the map
         return Event.objects.all()
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Get first event with coordinates for map centering
+        first_event = self.get_queryset().filter(latitude__isnull=False, longitude__isnull=False).first()
+        if first_event:
+            context['first_event_lat'] = first_event.latitude
+            context['first_event_lon'] = first_event.longitude
+        return context
+
 
 class EventDisplay(generic.DetailView):
     model = Event
@@ -186,6 +195,11 @@ class EventUpdateMap(LoginRequiredMixin, SuccessMessageMixin, EventFormMixin, ge
 
     def get_success_url(self):
         return reverse_lazy('events:event-detail', kwargs={'pk': self.object.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['object'] = self.object
+        return context
 
 
 class EventDeleteMap(LoginRequiredMixin, SuccessMessageMixin, generic.DeleteView):

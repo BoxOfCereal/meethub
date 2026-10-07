@@ -4,6 +4,16 @@
 
 {% block title %}Delete Event - MeetHub{% endblock %}
 
+{% block map_init_script %}
+    {% if object.latitude and object.longitude %}
+        {% with initial_lat=object.latitude initial_lon=object.longitude %}
+            {{ block.super }}
+        {% endwith %}
+    {% else %}
+        {{ block.super }}
+    {% endif %}
+{% endblock %}
+
 {% block sidebar_content %}
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="text-dark font-weight-bold">
@@ -95,12 +105,9 @@
         // Add event marker
         const eventLat = {{ object.latitude }};
         const eventLon = {{ object.longitude }};
-        
+
         const marker = L.marker([eventLat, eventLon]).addTo(map);
         marker.bindPopup('<strong>{{ object.name }}</strong><br>{{ object.venue|default:"" }}').openPopup();
-        
-        // Center map on event location
-        map.setView([eventLat, eventLon], 15);
     {% endif %}
 </script>
 {% endblock %}

@@ -3,6 +3,16 @@
 
 {% block title %}Discover Events on Map - MeetHub{% endblock %}
 
+{% block map_init_script %}
+    {% if first_event_lat and first_event_lon %}
+        {% with initial_lat=first_event_lat initial_lon=first_event_lon %}
+            {{ block.super }}
+        {% endwith %}
+    {% else %}
+        {{ block.super }}
+    {% endif %}
+{% endblock %}
+
 {% block sidebar_content %}
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="text-dark font-weight-bold">

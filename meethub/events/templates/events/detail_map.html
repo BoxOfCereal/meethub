@@ -5,6 +5,16 @@
 
 {% block title %}{{ event.name }} - MeetHub{% endblock %}
 
+{% block map_init_script %}
+    {% if event.latitude and event.longitude %}
+        {% with initial_lat=event.latitude initial_lon=event.longitude %}
+            {{ block.super }}
+        {% endwith %}
+    {% else %}
+        {{ block.super }}
+    {% endif %}
+{% endblock %}
+
 {% block sidebar_content %}
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="text-dark font-weight-bold">
@@ -208,12 +218,9 @@
         // Add event marker
         const eventLat = {{ event.latitude }};
         const eventLon = {{ event.longitude }};
-        
+
         const marker = L.marker([eventLat, eventLon]).addTo(map);
         marker.bindPopup('<strong>{{ event.name }}</strong><br>{{ event.venue|default:"" }}').openPopup();
-        
-        // Center map on event location
-        map.setView([eventLat, eventLon], 15);
     {% endif %}
 </script>
 {% endblock %}
