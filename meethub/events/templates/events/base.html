@@ -263,9 +263,12 @@
                                 <i class="fas fa-cog mr-2"></i>Settings
                             </a>
                             <div class="dropdown-divider"></div>
-                            {% comment %} <a class="dropdown-item" href="{% url 'account:logout' %}">
-                                <i class="fas fa-sign-out-alt mr-2"></i>Logout
-                            </a> {% endcomment %}
+                            <form method="post" action="{% url 'accounts:logout' %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="dropdown-item" style="background: none; border: none; width: 100%; text-align: left; cursor: pointer;">
+                                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                                </button>
+                            </form>
                         </div>
                     </li>
                 </ul>
