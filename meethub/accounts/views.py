@@ -4,9 +4,11 @@ from django.views.generic import TemplateView
 # from django.contrib.auth.models import User
 from django.db.models import Count
 from django.shortcuts import render
+from django.contrib.auth import views as auth_views
 
 from meethub.accounts.forms import SignUpForm
 from meethub.accounts.models import Account
+from meethub.events.models import Event
 # Create your views here.
 
 
@@ -14,6 +16,32 @@ class SignUp(generic.CreateView):
     form_class = SignUpForm
     template_name = 'registration/signup.html'
     success_url = reverse_lazy('accounts:login')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add events to context for the map
+        context['events'] = Event.objects.all()
+        # Get first event with coordinates for map centering
+        first_event = Event.objects.filter(latitude__isnull=False, longitude__isnull=False).first()
+        if first_event:
+            context['first_event_lat'] = first_event.latitude
+            context['first_event_lon'] = first_event.longitude
+        return context
+
+
+class CustomLoginView(auth_views.LoginView):
+    template_name = 'registration/login.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add events to context for the map
+        context['events'] = Event.objects.all()
+        # Get first event with coordinates for map centering
+        first_event = Event.objects.filter(latitude__isnull=False, longitude__isnull=False).first()
+        if first_event:
+            context['first_event_lat'] = first_event.latitude
+            context['first_event_lon'] = first_event.longitude
+        return context
 
 
 class HomePageView(TemplateView):
