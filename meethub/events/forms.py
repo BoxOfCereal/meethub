@@ -48,9 +48,18 @@ class EventForm(forms.ModelForm):
         })
     )
 
+    is_private_location = forms.BooleanField(
+        required=False,
+        widget=forms.CheckboxInput(attrs={
+            'class': 'form-check-input',
+            'id': 'private-location-checkbox'
+        }),
+        label='Private Location'
+    )
+
     class Meta:
         model = Event
-        fields = ('category', 'name', 'details', 'venue', 'time', 'date', 'latitude', 'longitude',)
+        fields = ('category', 'name', 'details', 'venue', 'time', 'date', 'latitude', 'longitude', 'is_private_location',)
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'venue': forms.TextInput(attrs={'class': 'form-control'}),

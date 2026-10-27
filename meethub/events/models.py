@@ -32,6 +32,7 @@ class Event(models.Model):
     creator = models.ForeignKey(Account, on_delete=models.CASCADE)
     attendees = models.ManyToManyField(Account, related_name='attending', blank=True)
     num_of_attendees = models.PositiveIntegerField(default=0, blank=True)
+    is_private_location = models.BooleanField(default=True, help_text='Check if the event location is private and should not show on map')
     latitude = models.FloatField(null=True, blank=True, help_text='Latitude coordinate for the event location')
     longitude = models.FloatField(null=True, blank=True, help_text='Longitude coordinate for the event location')
 

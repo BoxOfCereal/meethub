@@ -215,7 +215,7 @@ class EventUpdate(LoginRequiredMixin, SuccessMessageMixin, EventFormMixin, gener
     model = Event
     template_name = 'events/update_form.html'
     template_name_suffix = '_update_form'
-    fields = ('category', 'name', 'details', 'venue', 'time', 'date', 'latitude', 'longitude',)
+    fields = ('category', 'name', 'details', 'venue', 'time', 'date', 'latitude', 'longitude', 'is_private_location',)
     success_message = "%(name)s was updated successfully"
 
     def get_success_url(self):
@@ -234,7 +234,7 @@ class EventUpdateMap(LoginRequiredMixin, SuccessMessageMixin, EventFormMixin, ge
     model = Event
     template_name = 'events/update_event_map.html'
     template_name_suffix = '_update_form'
-    fields = ('category', 'name', 'details', 'venue', 'time', 'date', 'latitude', 'longitude',)
+    fields = ('category', 'name', 'details', 'venue', 'time', 'date', 'latitude', 'longitude', 'is_private_location',)
     success_message = "%(name)s was updated successfully"
 
     def get_success_url(self):

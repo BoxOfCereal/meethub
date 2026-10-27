@@ -103,7 +103,14 @@
                             {% endif %}
                         </div>
                         
-                        <div class="row">
+                        <div class="form-check mb-3">
+                            <input type="checkbox" class="form-check-input" id="private-location-checkbox" name="{{ form.is_private_location.name }}" checked>
+                            <label class="form-check-label" for="private-location-checkbox">
+                                <strong>Private Location</strong> - Event location will not be displayed on the map
+                            </label>
+                        </div>
+                        
+                        <div class="row" id="location-fields">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="{{ form.latitude.id_for_label }}">Latitude</label>
@@ -152,6 +159,45 @@
     // Get form fields
     const latitudeField = document.getElementById('latitude-field');
     const longitudeField = document.getElementById('longitude-field');
+    const privateLocationCheckbox = document.getElementById('private-location-checkbox');
+    const locationFieldsDiv = document.getElementById('location-fields');
+    
+    // Initialize state - hide location fields by default (checkbox is checked)
+    locationFieldsDiv.style.display = 'none';
+    
+    // Toggle location fields based on private location checkbox
+    privateLocationCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            // Hide location fields when private location is checked
+            locationFieldsDiv.style.display = 'none';
+            latitudeField.value = '';
+            longitudeField.value = '';
+            if (eventMarker) {
+                map.removeLayer(eventMarker);
+                eventMarker = null;
+            }
+        } else {
+            // Show location fields when unchecked and display warning overlay
+            locationFieldsDiv.style.display = 'flex';
+            
+            // Get the form element
+            const form = document.getElementById('event-form');
+            const formRect = form.getBoundingClientRect();
+            
+            // Show warning overlay covering just the form
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `position: absolute; top: ${formRect.top}px; left: ${formRect.left}px; width: ${formRect.width}px; height: ${formRect.height}px; background: rgba(220, 53, 69, 0.95); color: white; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; animation: fadeIn 0.3s;`;
+            overlay.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-exclamation-triangle" style="font-size: 64px; margin-bottom: 20px;"></i><h2 style="font-size: 32px; font-weight: bold; margin-bottom: 10px;">Do not post private venues</h2><p style="font-size: 18px; margin-bottom: 10px;">Please respect DM only venues</p><p style="font-size: 18px; font-weight: bold; color: #ffc107;">You will be permanently banned from the website</p></div>';
+            document.body.appendChild(overlay);
+            
+            // Remove overlay after 3 seconds
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+                overlay.style.transition = 'opacity 0.3s';
+                setTimeout(() => overlay.remove(), 300);
+            }, 3000);
+        }
+    });
     
     // Variable to store the draggable marker
     let eventMarker = null;
