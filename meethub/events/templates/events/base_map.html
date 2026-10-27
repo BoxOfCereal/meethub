@@ -48,21 +48,21 @@
     {% if initial_lat and initial_lon %}
         const initialLat = {{ initial_lat }};
         const initialLon = {{ initial_lon }};
-        const initialZoom = 15;
+        const initialZoom = 12;
     {% else %}
         const initialLat = 40.7128;
         const initialLon = -74.0060;
-        const initialZoom = 13;
+        const initialZoom = 10;
     {% endif %}
 
     // Initialize map
-    const map = L.map('map').setView([initialLat, initialLon], initialZoom);
+    window.map = L.map('map').setView([initialLat, initialLon], initialZoom);
 
     // Add OpenStreetMap tiles (no API key required for basic usage)
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(map);
+    }).addTo(window.map);
 
     // Get user's location (only if not already centered on specific coordinates)
     {% if not initial_lat or not initial_lon %}
@@ -71,7 +71,7 @@
                 function(position) {
                     const lat = position.coords.latitude;
                     const lon = position.coords.longitude;
-                    map.setView([lat, lon], 13);
+                    window.map.setView([lat, lon], 10);
 
                     // Add user location marker
                     L.circleMarker([lat, lon], {
@@ -81,7 +81,7 @@
                         weight: 2,
                         opacity: 1,
                         fillOpacity: 1
-                    }).addTo(map).bindPopup('Your Location');
+                    }).addTo(window.map).bindPopup('Your Location');
                 },
                 function(error) {
                     console.log('Geolocation error:', error.message);

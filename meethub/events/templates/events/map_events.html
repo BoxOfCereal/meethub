@@ -296,7 +296,7 @@
         
         if (lat && lon && !isNaN(lat) && !isNaN(lon)) {
             // Create custom marker
-            const marker = L.marker([lat, lon]).addTo(map);
+            const marker = L.marker([lat, lon]).addTo(window.map);
             
             // Create popup content
             const eventName = card.querySelector('.card-title a').textContent;
@@ -341,7 +341,7 @@
             const lon = parseFloat(this.dataset.lon);
             
             if (lat && lon && !isNaN(lat) && !isNaN(lon)) {
-                map.setView([lat, lon], 15);
+                window.map.setView([lat, lon], 12);
             }
         });
     });
@@ -359,7 +359,7 @@
             const lon = parseFloat(card.dataset.lon);
             
             if (lat && lon && !isNaN(lat) && !isNaN(lon) && markers[eventId]) {
-                map.setView([lat, lon], 15);
+                window.map.setView([lat, lon], 12);
                 markers[eventId].openPopup();
             }
         });
