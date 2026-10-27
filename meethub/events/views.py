@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views import View
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count
 
 from meethub.actions.utils import create_action
 from meethub.comments.models import Comment
@@ -25,10 +26,31 @@ class EventList(LoginRequiredMixin, generic.ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        if self.request.user.is_superuser:
-            return Event.objects.all()
-        else:
-            return Event.objects.all()
+        queryset = Event.objects.all()
+        
+        sort_by = self.request.GET.get('sort', 'date')
+        order = self.request.GET.get('order')
+        
+        # Set default order based on sort type
+        if order is None:
+            if sort_by == 'attendees':
+                order = 'desc'  # Biggest to least
+            else:
+                order = 'asc'  # Soonest, alphabetical, closest
+        
+        if sort_by == 'date':
+            queryset = queryset.order_by('date', 'time')
+        elif sort_by == 'category':
+            queryset = queryset.order_by('category__name')
+        elif sort_by == 'attendees':
+            queryset = queryset.annotate(
+                attendee_count=Count('attendees')
+            ).order_by('attendee_count')
+        
+        if order == 'desc':
+            queryset = queryset.reverse()
+        
+        return queryset
 
 
 class MapEventList(LoginRequiredMixin, generic.ListView):
@@ -38,9 +60,31 @@ class MapEventList(LoginRequiredMixin, generic.ListView):
     paginate_by = 20
 
     def get_queryset(self):
-        # Return all events, including those without coordinates
-        # Events without coordinates will only show in the list, not on the map
-        return Event.objects.all()
+        queryset = Event.objects.all()
+        
+        sort_by = self.request.GET.get('sort', 'date')
+        order = self.request.GET.get('order')
+        
+        # Set default order based on sort type
+        if order is None:
+            if sort_by == 'attendees':
+                order = 'desc'  # Biggest to least
+            else:
+                order = 'asc'  # Soonest, alphabetical, closest
+        
+        if sort_by == 'date':
+            queryset = queryset.order_by('date', 'time')
+        elif sort_by == 'category':
+            queryset = queryset.order_by('category__name')
+        elif sort_by == 'attendees':
+            queryset = queryset.annotate(
+                attendee_count=Count('attendees')
+            ).order_by('attendee_count')
+        
+        if order == 'desc':
+            queryset = queryset.reverse()
+        
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

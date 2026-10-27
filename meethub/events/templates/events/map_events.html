@@ -18,16 +18,31 @@
                 <h2 class="text-dark font-weight-bold">
                     <i class="fas fa-map-marked-alt mr-2"></i>Events Near You
                 </h2>
-                <div class="btn-group" role="group">
-                    <a href="{% url 'events:event-list-view' %}" class="btn btn-outline-primary">
-                        <i class="fas fa-th-large mr-1"></i>Grid
-                    </a>
-                    <a href="{% url 'events:event-list' %}" class="btn btn-outline-primary active">
-                        <i class="fas fa-map-marked-alt mr-1"></i>Map
-                    </a>
-                    <a href="{% url 'events:event-create' %}" class="btn btn-primary">
-                        <i class="fas fa-plus-circle mr-2"></i>Create Event
-                    </a>
+                <div class="d-flex align-items-center">
+                    <!-- Sort Dropdown -->
+                    <select id="sort-select" class="form-control mr-2" style="width: auto;">
+                        <option value="date" {% if request.GET.sort == 'date' or not request.GET.sort %}selected{% endif %}>Date</option>
+                        <option value="category" {% if request.GET.sort == 'category' %}selected{% endif %}>Category</option>
+                        <option value="attendees" {% if request.GET.sort == 'attendees' %}selected{% endif %}>Attendees</option>
+                        <option value="distance" {% if request.GET.sort == 'distance' %}selected{% endif %}>Distance</option>
+                    </select>
+                    
+                    <!-- Order Toggle -->
+                    <button id="order-toggle" class="btn btn-outline-secondary mr-2">
+                        <i class="fas fa-sort-amount-{% if request.GET.sort == 'attendees' and not request.GET.order %}down{% elif request.GET.order == 'desc' %}down{% else %}up{% endif %}"></i>
+                    </button>
+                    
+                    <div class="btn-group" role="group">
+                        <a href="{% url 'events:event-list-view' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-th-large mr-1"></i>Grid
+                        </a>
+                        <a href="{% url 'events:event-list' %}" class="btn btn-outline-primary active">
+                            <i class="fas fa-map-marked-alt mr-1"></i>Map
+                        </a>
+                        <a href="{% url 'events:event-create' %}" class="btn btn-primary">
+                            <i class="fas fa-plus-circle mr-2"></i>Create Event
+                        </a>
+                    </div>
                 </div>
             </div>
             
@@ -206,6 +221,69 @@
 
 {% block map_extra_js %}
 <script>
+    // Handle sort dropdown change
+    document.getElementById('sort-select').addEventListener('change', function() {
+        const url = new URL(window.location);
+        url.searchParams.set('sort', this.value);
+        window.location = url.toString();
+    });
+
+    // Handle order toggle
+    document.getElementById('order-toggle').addEventListener('click', function() {
+        const url = new URL(window.location);
+        const currentOrder = url.searchParams.get('order') || 'asc';
+        url.searchParams.set('order', currentOrder === 'asc' ? 'desc' : 'asc');
+        window.location = url.toString();
+    });
+
+    // Calculate distance between two coordinates (Haversine formula)
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371; // Earth's radius in km
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
+
+    // Handle distance sorting
+    const sortSelect = document.getElementById('sort-select');
+    if (sortSelect.value === 'distance') {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                const userLat = position.coords.latitude;
+                const userLon = position.coords.longitude;
+                
+                const eventCards = Array.from(document.querySelectorAll('.event-card'));
+                eventCards.sort((a, b) => {
+                    const latA = parseFloat(a.dataset.lat) || 0;
+                    const lonA = parseFloat(a.dataset.lon) || 0;
+                    const latB = parseFloat(b.dataset.lat) || 0;
+                    const lonB = parseFloat(b.dataset.lon) || 0;
+                    
+                    const distA = calculateDistance(userLat, userLon, latA, lonA);
+                    const distB = calculateDistance(userLat, userLon, latB, lonB);
+                    
+                    // Default to asc (closest first) unless explicitly set to desc
+                    const url = new URL(window.location);
+                    const currentOrder = url.searchParams.get('order');
+                    const effectiveOrder = currentOrder === 'desc' ? 'desc' : 'asc';
+                    return effectiveOrder === 'asc' ? distA - distB : distB - distA;
+                });
+                
+                const container = document.querySelector('.events-list');
+                eventCards.forEach(card => container.appendChild(card));
+            }, function(error) {
+                console.log('Geolocation error:', error);
+                alert('Unable to get your location. Distance sorting unavailable.');
+            });
+        } else {
+            alert('Geolocation is not supported by your browser. Distance sorting unavailable.');
+        }
+    }
+
     // Store markers for reference
     const markers = {};
     
