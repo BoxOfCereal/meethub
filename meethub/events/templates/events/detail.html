@@ -116,16 +116,18 @@
                             <div class="col-md-4 col-sm-6 mb-3">
                                 <div class="d-flex align-items-center p-3 border rounded">
                                     <div class="mr-3">
-                                        {% if attendee.profile.photo %}
-                                            <img src="{{ attendee.profile.photo.url }}" width="50" height="50" style="object-fit: cover; border-radius: 50%;">
-                                        {% else %}
-                                            <div style="width: 50px; height: 50px; border-radius: 50%; background: #e0e0e0; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-user text-muted"></i>
-                                            </div>
-                                        {% endif %}
+                                        <a href="{% url 'profile:detail-map' attendee.id %}">
+                                            {% if attendee.profile.photo %}
+                                                <img src="{{ attendee.profile.photo.url }}" width="50" height="50" style="object-fit: cover; border-radius: 50%;" alt="{{ attendee.get_full_name }}">
+                                            {% else %}
+                                                <div style="width: 50px; height: 50px; border-radius: 50%; background: #e0e0e0; display: flex; align-items: center; justify-content: center;">
+                                                    <i class="fas fa-user text-muted"></i>
+                                                </div>
+                                            {% endif %}
+                                        </a>
                                     </div>
                                     <div>
-                                        <h6 class="mb-0 font-weight-bold">{{ attendee.username|capfirst }}</h6>
+                                        <h6 class="mb-0 font-weight-bold"><a href="{% url 'profile:detail-map' attendee.id %}" class="text-decoration-none text-dark">{{ attendee.username|capfirst }}</a></h6>
                                         <small class="text-muted">Attendee</small>
                                     </div>
                                 </div>
@@ -158,16 +160,18 @@
                         {% if not comment.get_parents %}
                             <div class="media mb-4 p-3 border rounded">
                                 <div class="media-object mr-3">
-                                    {% if comment.get_comment_creator_photo %}
-                                        <img src="{{ comment.get_comment_creator_photo.url }}" width="50" height="50" style="object-fit: cover; border-radius: 50%;">
-                                    {% else %}
-                                        <div style="width: 50px; height: 50px; border-radius: 50%; background: #e0e0e0; display: flex; align-items: center; justify-content: center;">
-                                            <i class="fas fa-user text-muted"></i>
-                                        </div>
-                                    {% endif %}
+                                    <a href="{% url 'profile:detail-map' comment.created_by.id %}">
+                                        {% if comment.get_comment_creator_photo %}
+                                            <img src="{{ comment.get_comment_creator_photo.url }}" width="50" height="50" style="object-fit: cover; border-radius: 50%;" alt="{{ comment.created_by.get_full_name }}">
+                                        {% else %}
+                                            <div style="width: 50px; height: 50px; border-radius: 50%; background: #e0e0e0; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-user text-muted"></i>
+                                            </div>
+                                        {% endif %}
+                                    </a>
                                 </div>
                                 <div class="media-body">
-                                    <h5 class="mt-0 mb-2 text-primary font-weight-bold">{{ comment.created_by|capfirst }}</h5>
+                                    <h5 class="mt-0 mb-2 text-primary font-weight-bold"><a href="{% url 'profile:detail-map' comment.created_by.id %}" class="text-decoration-none text-primary">{{ comment.created_by|capfirst }}</a></h5>
                                     <p class="text-dark mb-3">{{ comment.comment }}</p>
                                     <a href="{% url 'comments:comment-detail' comment.id event.id %}" class="btn btn-sm btn-outline-primary">
                                         <i class="fas fa-reply mr-1"></i>Reply
@@ -178,16 +182,18 @@
                                             {% for child in comment.get_children %}
                                                 <div class="media mt-3 ml-4 p-3 bg-light rounded">
                                                     <div class="media-object mr-3">
-                                                        {% if child.get_comment_creator_photo %}
-                                                            <img src="{{ child.get_comment_creator_photo.url }}" width="40" height="40" style="object-fit: cover; border-radius: 50%;">
-                                                        {% else %}
-                                                            <div style="width: 40px; height: 40px; border-radius: 50%; background: #e0e0e0; display: flex; align-items: center; justify-content: center;">
-                                                                <i class="fas fa-user text-muted"></i>
-                                                            </div>
-                                                        {% endif %}
+                                                        <a href="{% url 'profile:detail-map' child.created_by.id %}">
+                                                            {% if child.get_comment_creator_photo %}
+                                                                <img src="{{ child.get_comment_creator_photo.url }}" width="40" height="40" style="object-fit: cover; border-radius: 50%;" alt="{{ child.created_by.get_full_name }}">
+                                                            {% else %}
+                                                                <div style="width: 40px; height: 40px; border-radius: 50%; background: #e0e0e0; display: flex; align-items: center; justify-content: center;">
+                                                                    <i class="fas fa-user text-muted"></i>
+                                                                </div>
+                                                            {% endif %}
+                                                        </a>
                                                     </div>
                                                     <div class="media-body">
-                                                        <h6 class="mt-0 mb-2 text-primary font-weight-bold">{{ child.created_by|capfirst }}</h6>
+                                                        <h6 class="mt-0 mb-2 text-primary font-weight-bold"><a href="{% url 'profile:detail-map' child.created_by.id %}" class="text-decoration-none text-primary">{{ child.created_by|capfirst }}</a></h6>
                                                         <p class="text-dark mb-2">{{ child.comment }}</p>
                                                         <a href="{% url 'comments:comment-detail' child.id event.id %}" class="btn btn-sm btn-outline-primary">
                                                             <i class="fas fa-reply mr-1"></i>Reply
@@ -198,16 +204,18 @@
                                                                 {% for grandchild in child.get_children %}
                                                                     <div class="media mt-2 ml-4 p-2 bg-white rounded border">
                                                                         <div class="media-object mr-2">
-                                                                            {% if grandchild.get_comment_creator_photo %}
-                                                                                <img src="{{ grandchild.get_comment_creator_photo.url }}" width="30" height="30" style="object-fit: cover; border-radius: 50%;">
-                                                                            {% else %}
-                                                                                <div style="width: 30px; height: 30px; border-radius: 50%; background: #e0e0e0; display: flex; align-items: center; justify-content: center;">
-                                                                                    <i class="fas fa-user text-muted" style="font-size: 0.8rem;"></i>
-                                                                                </div>
-                                                                            {% endif %}
+                                                                            <a href="{% url 'profile:detail-map' grandchild.created_by.id %}">
+                                                                                {% if grandchild.get_comment_creator_photo %}
+                                                                                    <img src="{{ grandchild.get_comment_creator_photo.url }}" width="30" height="30" style="object-fit: cover; border-radius: 50%;" alt="{{ grandchild.created_by.get_full_name }}">
+                                                                                {% else %}
+                                                                                    <div style="width: 30px; height: 30px; border-radius: 50%; background: #e0e0e0; display: flex; align-items: center; justify-content: center;">
+                                                                                        <i class="fas fa-user text-muted" style="font-size: 0.8rem;"></i>
+                                                                                    </div>
+                                                                                {% endif %}
+                                                                            </a>
                                                                         </div>
                                                                         <div class="media-body">
-                                                                            <h6 class="mt-0 mb-1 text-primary font-weight-bold">{{ grandchild.created_by|capfirst }}</h6>
+                                                                            <h6 class="mt-0 mb-1 text-primary font-weight-bold"><a href="{% url 'profile:detail-map' grandchild.created_by.id %}" class="text-decoration-none text-primary">{{ grandchild.created_by|capfirst }}</a></h6>
                                                                             <p class="text-dark mb-0">{{ grandchild.comment }}</p>
                                                                         </div>
                                                                     </div>

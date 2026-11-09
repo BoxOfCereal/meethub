@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
+from django.db import models
 
 from meethub.events.models import Event
 from meethub.comments.models import Comment
@@ -47,8 +48,35 @@ class UserDetail(LoginRequiredMixin, generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['events'] = Event.objects.filter(creator=self.request.user)
-        context['comments'] = Comment.objects.filter(created_by=self.request.user)
+        account = self.get_object()
+        context['events'] = Event.objects.filter(creator=account)
+        context['comments'] = Comment.objects.filter(created_by=account)
+        
+        # Add friendship status
+        from meethub.social.models import Friendship, Follow, Block
+        if account != self.request.user:
+            friendship = Friendship.objects.filter(
+                models.Q(requester=self.request.user, receiver=account) |
+                models.Q(requester=account, receiver=self.request.user)
+            ).first()
+            context['friendship'] = friendship
+            context['is_following'] = Follow.objects.filter(
+                follower=self.request.user, following=account
+            ).exists()
+            context['is_blocked'] = Block.objects.filter(
+                blocker=self.request.user, blocked=account
+            ).exists()
+        else:
+            # Show pending friend requests for own profile
+            context['pending_friend_requests'] = Friendship.objects.filter(
+                receiver=self.request.user, status='pending'
+            )
+            # Show accepted friends for own profile
+            context['friends'] = Friendship.objects.filter(
+                models.Q(requester=self.request.user) | models.Q(receiver=self.request.user),
+                status='accepted'
+            )
+        
         return context
 
 
@@ -59,6 +87,33 @@ class UserDetailMap(LoginRequiredMixin, generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['events'] = Event.objects.filter(creator=self.request.user)
-        context['comments'] = Comment.objects.filter(created_by=self.request.user)
+        account = self.get_object()
+        context['events'] = Event.objects.filter(creator=account)
+        context['comments'] = Comment.objects.filter(created_by=account)
+        
+        # Add friendship status
+        from meethub.social.models import Friendship, Follow, Block
+        if account != self.request.user:
+            friendship = Friendship.objects.filter(
+                models.Q(requester=self.request.user, receiver=account) |
+                models.Q(requester=account, receiver=self.request.user)
+            ).first()
+            context['friendship'] = friendship
+            context['is_following'] = Follow.objects.filter(
+                follower=self.request.user, following=account
+            ).exists()
+            context['is_blocked'] = Block.objects.filter(
+                blocker=self.request.user, blocked=account
+            ).exists()
+        else:
+            # Show pending friend requests for own profile
+            context['pending_friend_requests'] = Friendship.objects.filter(
+                receiver=self.request.user, status='pending'
+            )
+            # Show accepted friends for own profile
+            context['friends'] = Friendship.objects.filter(
+                models.Q(requester=self.request.user) | models.Q(receiver=self.request.user),
+                status='accepted'
+            )
+        
         return context

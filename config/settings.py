@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'meethub.profile.apps.ProfileConfig',
     'meethub.actions.apps.ActionsConfig',
     'meethub.comments.apps.CommentsConfig',
+    'meethub.social.apps.SocialConfig',
 ]
 
 MIDDLEWARE = [

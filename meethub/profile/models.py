@@ -11,6 +11,12 @@ class Profile(models.Model):
     user = models.OneToOneField(Account, on_delete=models.CASCADE)
     date_of_birth = models.DateField(blank=True, null=True)
     photo = models.ImageField(upload_to='profile_photos/', blank=True, null=True)
+    bio = models.TextField(max_length=500, blank=True)
+    website = models.URLField(blank=True)
+    social_links = models.JSONField(default=dict, blank=True)  # {'twitter': '', 'instagram': '', etc.}
+    allow_friend_requests = models.BooleanField(default=True)
+    allow_wall_posts = models.BooleanField(default=True)
+    allow_non_friend_wall_comments = models.BooleanField(default=False)
 
     class Meta:
         verbose_name_plural = 'profiles'

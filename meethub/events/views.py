@@ -155,7 +155,7 @@ class CommentCreateMap(SuccessMessageMixin, generic.CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy('events:event-detail-map', kwargs={'pk': self.get_object(Event.objects.all()).pk})
+        return reverse_lazy('events:event-detail', kwargs={'pk': self.get_object(Event.objects.all()).pk})
 
 
 class EventDetail(LoginRequiredMixin, View):

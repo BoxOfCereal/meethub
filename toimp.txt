@@ -1,0 +1,19 @@
+## Create event
+When the location is private I should not be able to place a pin on the map
+
+The date field needs to display some sort of tool tip that the date is formatted like mm/dd/yyyy
+
+Improve text
+
+Bill poster
+
+Overall design
+
+Tags
+
+## event
+Users who create an event should automatically be attending the event and they should not be allowed to not attend
+There needs to be a tool tip about this
+
+### Before and after
+There needs to be some kind of delineation that happens before and after the events for like comments and uh stuff there's probably some processing

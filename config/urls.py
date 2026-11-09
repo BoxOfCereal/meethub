@@ -36,6 +36,7 @@ urlpatterns = [
     path('profile/', include('meethub.profile.urls'), name='profile'),
     path('actions/', include('meethub.actions.urls')),
     path('comments/', include('meethub.comments.urls')),
+    path('social/', include('meethub.social.urls')),
 
     # path('api/v1/', include('apiv1.urls')),
 

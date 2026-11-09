@@ -43,13 +43,208 @@
                                 <i class="fas fa-calendar-check text-muted mr-2"></i>
                                 <span class="text-dark">Joined {{ account.date_joined|date:"F Y" }}</span>
                             </div>
-                            <a class="btn btn-primary btn-sm" href="{% url 'profile:edit' %}">
-                                <i class="fas fa-edit mr-2"></i>Edit Profile
-                            </a>
+                            <div class="mt-3">
+                                {% if account == request.user %}
+                                <a class="btn btn-primary btn-sm" href="{% url 'profile:edit' %}">
+                                    <i class="fas fa-edit mr-2"></i>Edit Profile
+                                </a>
+                                {% else %}
+                                {% if friendship %}
+                                    {% if friendship.status == 'pending' %}
+                                        {% if friendship.requester == request.user %}
+                                        <span class="btn btn-warning btn-sm">
+                                            <i class="fas fa-clock mr-1"></i>Pending
+                                        </span>
+                                        {% else %}
+                                        <form method="post" action="{% url 'social:accept-friend-request' friendship.id %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-success btn-sm">
+                                                <i class="fas fa-check mr-1"></i>Accept
+                                            </button>
+                                        </form>
+                                        <form method="post" action="{% url 'social:reject-friend-request' friendship.id %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-times mr-1"></i>Reject
+                                            </button>
+                                        </form>
+                                        {% endif %}
+                                    {% elif friendship.status == 'accepted' %}
+                                        <form method="post" action="{% url 'social:unfriend' account.id %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-user-minus mr-1"></i>Unfriend
+                                            </button>
+                                        </form>
+                                    {% elif friendship.status == 'rejected' %}
+                                        <span class="btn btn-secondary btn-sm">
+                                            <i class="fas fa-ban mr-1"></i>Request Rejected
+                                        </span>
+                                        {% endif %}
+                                {% else %}
+                                <form method="post" action="{% url 'social:send-friend-request' account.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-user-plus mr-1"></i>Send Friend Request
+                                    </button>
+                                </form>
+                                {% endif %}
+                                
+                                {% if is_following %}
+                                <form method="post" action="{% url 'social:unfollow-user' account.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-user-minus mr-1"></i>Unfollow
+                                    </button>
+                                </form>
+                                {% else %}
+                                <form method="post" action="{% url 'social:follow-user' account.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-user-plus mr-1"></i>Follow
+                                    </button>
+                                </form>
+                                {% endif %}
+                                
+                                {% if is_blocked %}
+                                <form method="post" action="{% url 'social:unblock-user' account.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-success btn-sm">
+                                        <i class="fas fa-unlock mr-1"></i>Unblock
+                                    </button>
+                                </form>
+                                {% else %}
+                                <form method="post" action="{% url 'social:block-user' account.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                        <i class="fas fa-ban mr-1"></i>Block
+                                    </button>
+                                </form>
+                                {% endif %}
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+            
+            <!-- Pending Friend Requests -->
+            {% if account == request.user and pending_friend_requests %}
+            <div class="card mb-3">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-clock mr-2"></i>Pending Friend Requests ({{ pending_friend_requests|length }})
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for request in pending_friend_requests %}
+                    <div class="d-flex align-items-center p-2 border rounded mb-2">
+                        <div class="mr-2">
+                            <a href="{% url 'profile:detail-map' request.requester.id %}">
+                                {% if request.requester.profile.photo %}
+                                    <img src="{{ request.requester.profile.photo.url }}" width="40" height="40" style="object-fit: cover; border-radius: 50%;" alt="{{ request.requester.get_full_name }}">
+                                {% else %}
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; background: #e0e0e0; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-user text-muted"></i>
+                                    </div>
+                                {% endif %}
+                            </a>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0 font-weight-bold"><a href="{% url 'profile:detail-map' request.requester.id %}" class="text-decoration-none text-dark">{{ request.requester.get_full_name }}</a></h6>
+                            <small class="text-muted">{{ request.created_at|timesince }} ago</small>
+                        </div>
+                        <div class="btn-group btn-group-sm">
+                            <form method="post" action="{% url 'social:accept-friend-request' request.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            </form>
+                            <form method="post" action="{% url 'social:reject-friend-request' request.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Friends Section -->
+            {% if account == request.user and friends %}
+            <div class="card mb-3">
+                <div class="card-header bg-transparent">
+                    <h5 class="mb-0">
+                        <i class="fas fa-users mr-2"></i>My Friends ({{ friends|length }})
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for friendship in friends %}
+                    {% if friendship.requester == account %}
+                    {% with friend=friendship.receiver %}
+                    <div class="d-flex align-items-center p-2 border rounded mb-2">
+                        <div class="mr-2">
+                            <a href="{% url 'profile:detail-map' friend.id %}">
+                                {% if friend.profile.photo %}
+                                    <img src="{{ friend.profile.photo.url }}" width="40" height="40" style="object-fit: cover; border-radius: 50%;" alt="{{ friend.get_full_name }}">
+                                {% else %}
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; background: #e0e0e0; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-user text-muted"></i>
+                                    </div>
+                                {% endif %}
+                            </a>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0 font-weight-bold"><a href="{% url 'profile:detail-map' friend.id %}" class="text-decoration-none text-dark">{{ friend.get_full_name }}</a></h6>
+                            <small class="text-muted">Friends since {{ friendship.updated_at|date:"F Y" }}</small>
+                        </div>
+                        <div class="btn-group btn-group-sm">
+                            <form method="post" action="{% url 'social:unfriend' friend.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger">
+                                    <i class="fas fa-user-minus"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endwith %}
+                    {% else %}
+                    {% with friend=friendship.requester %}
+                    <div class="d-flex align-items-center p-2 border rounded mb-2">
+                        <div class="mr-2">
+                            <a href="{% url 'profile:detail-map' friend.id %}">
+                                {% if friend.profile.photo %}
+                                    <img src="{{ friend.profile.photo.url }}" width="40" height="40" style="object-fit: cover; border-radius: 50%;" alt="{{ friend.get_full_name }}">
+                                {% else %}
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; background: #e0e0e0; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-user text-muted"></i>
+                                    </div>
+                                {% endif %}
+                            </a>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0 font-weight-bold"><a href="{% url 'profile:detail-map' friend.id %}" class="text-decoration-none text-dark">{{ friend.get_full_name }}</a></h6>
+                            <small class="text-muted">Friends since {{ friendship.updated_at|date:"F Y" }}</small>
+                        </div>
+                        <div class="btn-group btn-group-sm">
+                            <form method="post" action="{% url 'social:unfriend' friend.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger">
+                                    <i class="fas fa-user-minus"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endwith %}
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
             
             <!-- Events Section -->
             {% if events %}
@@ -81,6 +276,7 @@
                                     </small>
                                     {% endif %}
                                 </div>
+                                {% if account == request.user %}
                                 <div class="btn-group btn-group-sm">
                                     <a href="{% url 'events:event-update' event.id %}" class="btn btn-outline-secondary">
                                         <i class="fas fa-edit"></i>
@@ -89,6 +285,7 @@
                                         <i class="fas fa-trash"></i>
                                     </a>
                                 </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>

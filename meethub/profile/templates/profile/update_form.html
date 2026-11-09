@@ -1,22 +1,27 @@
-{% extends 'events/base.html' %}
+{% extends 'events/base_map.html' %}
 {% load static %}
 {% load crispy_forms_filters %}
 
-{% block content %}
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <!-- Header Section -->
-            <div class="text-center mb-5">
-                <h1 class="text-white font-weight-bold mb-3">
-                    <i class="fas fa-user-edit mr-3"></i>Edit Your Profile
-                </h1>
-                <p class="text-white-50">Update your information and make your profile shine</p>
+{% block title %}Edit Profile - MeetHub{% endblock %}
+
+{% block sidebar_content %}
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-dark font-weight-bold">
+                    <i class="fas fa-user-edit mr-2"></i>Edit Profile
+                </h2>
+                <div class="btn-group" role="group">
+                    <a href="{% url 'profile:detail-map' user.id %}" class="btn btn-outline-primary">
+                        <i class="fas fa-list mr-1"></i>List
+                    </a>
+                    <a href="{% url 'profile:detail-map' user.id %}" class="btn btn-outline-primary active">
+                        <i class="fas fa-map-marked-alt mr-1"></i>Map
+                    </a>
+                </div>
             </div>
 
             <!-- Edit Form Card -->
-            <div class="card glass-card">
-                <div class="card-body p-5">
+            <div class="card mb-3">
+                <div class="card-body p-4">
                     <form method="post" action="{% url 'profile:edit' %}" enctype="multipart/form-data" class="profile-edit-form">
                         {% csrf_token %}
                         
@@ -66,7 +71,7 @@
                         <!-- Action Buttons -->
                         <div class="form-actions text-center pt-4">
                             <div class="btn-group-custom">
-                                <a href="{% url 'profile:detail' user.id %}" class="btn btn-outline-secondary btn-lg mr-3">
+                                <a href="{% url 'profile:detail-map' user.id %}" class="btn btn-outline-secondary btn-lg mr-3">
                                     <i class="fas fa-times mr-2"></i>Cancel
                                 </a>
                                 <button type="submit" class="btn btn-primary btn-lg">
@@ -79,7 +84,7 @@
             </div>
 
             <!-- Help Section -->
-            <div class="card glass-card mt-4">
+            <div class="card mb-3">
                 <div class="card-body p-4">
                     <div class="row align-items-center">
                         <div class="col-md-2 text-center">
@@ -88,16 +93,14 @@
                         <div class="col-md-10">
                             <h6 class="font-weight-bold mb-2">Profile Tips</h6>
                             <p class="text-muted mb-0">
-                                A complete profile helps others connect with you better. Add a profile picture and 
+                                A complete profile helps others connect with you better. Add a profile picture and
                                 keep your information up to date to make the most of your MeetHub experience.
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
+{% endblock %}
 
 <style>
     .profile-edit-form {
@@ -287,6 +290,7 @@
     }
 </style>
 
+{% block map_extra_js %}
 <script>
     // Add some interactive enhancements
     document.addEventListener('DOMContentLoaded', function() {
@@ -301,14 +305,14 @@
                 }
             });
         }
-        
+
         // Add focus effects to form fields
         const formControls = document.querySelectorAll('.form-control');
         formControls.forEach(control => {
             control.addEventListener('focus', function() {
                 this.closest('.form-group').classList.add('focused');
             });
-            
+
             control.addEventListener('blur', function() {
                 this.closest('.form-group').classList.remove('focused');
             });

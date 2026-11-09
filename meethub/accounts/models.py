@@ -71,3 +71,48 @@ class Account(AbstractBaseUser, PermissionsMixin):
         """
         send_mail(subject, message, from_email, [self.email], **kwargs)
         return True
+
+    def get_friends(self):
+        """Get accepted friends"""
+        from meethub.social.models import Friendship
+        friend_ids = Friendship.objects.filter(
+            models.Q(requester=self) | models.Q(receiver=self),
+            status='accepted'
+        ).values_list('requester', 'receiver')
+        friend_ids = set([fid for pair in friend_ids for fid in pair])
+        friend_ids.discard(self.id)
+        return Account.objects.filter(id__in=friend_ids)
+
+    def get_friends_of_friends(self):
+        """Get friends of friends"""
+        friends = self.get_friends()
+        fof_ids = set()
+        for friend in friends:
+            fof_ids.update(friend.get_friends().values_list('id', flat=True))
+        fof_ids.discard(self.id)
+        fof_ids.difference_update(self.get_friends().values_list('id', flat=True))
+        return Account.objects.filter(id__in=fof_ids)
+
+    def is_blocked_by(self, user):
+        """Check if user blocked this account"""
+        from meethub.social.models import Block
+        return Block.objects.filter(blocker=user, blocked=self).exists()
+
+    def has_blocked(self, user):
+        """Check if this account blocked user"""
+        from meethub.social.models import Block
+        return Block.objects.filter(blocker=self, blocked=user).exists()
+
+    def can_view_event(self, event):
+        """Check if user can view private event"""
+        return event.can_view(self)
+
+    def can_post_on_wall(self, wall_owner):
+        """Check if user can post on someone's wall"""
+        if not wall_owner.profile.allow_wall_posts:
+            return False
+        if wall_owner == self:
+            return True
+        if self in wall_owner.get_friends():
+            return True
+        return False
